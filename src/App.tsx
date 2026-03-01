@@ -23,7 +23,9 @@ import {
   Maximize,
   Activity,
   Shield,
-  ArrowLeft
+  ArrowLeft,
+  Upload,
+  Trash2
 } from 'lucide-react';
 const markedStudents = [
   { id: 1, name: 'Nguyễn Văn An (9A)', wellbeing: 80, status: 'Theo dõi thêm', color: 'bg-green-500' },
@@ -364,18 +366,58 @@ const resources = [
   { id: 3, title: 'Sơ cứu tâm lý: Hướng dẫn thực địa (WHO)', category: 'Xử lý tình huống', type: 'PDF', size: '1.5 MB', url: 'https://iris.who.int/bitstream/handle/10665/44615/9789241548205_eng.pdf' },
   { id: 4, title: 'Đường dây nóng Ngày Mai (Hỗ trợ tâm lý)', category: 'Xử lý tình huống', type: 'Website', size: 'Online', url: 'https://ngaymai.vn/' },
   { id: 5, title: 'Cẩm nang Truyền thông Sức khỏe Tâm thần (Bộ Y tế)', category: 'Tài liệu chuyên môn', type: 'Website', size: 'Online', url: 'https://moh.gov.vn/' },
+  { id: 6, title: 'Hướng dẫn hỗ trợ tâm lý học đường (Bộ GD&ĐT)', category: 'Tài liệu chuyên môn', type: 'PDF', size: '2.8 MB', url: '#' },
+  { id: 7, title: 'Kỹ năng lắng nghe thấu cảm trong tham vấn', category: 'Kỹ năng tham vấn', type: 'DOCX', size: '1.2 MB', url: '#' },
+  { id: 8, title: 'Quy trình can thiệp khủng hoảng tâm lý', category: 'Xử lý tình huống', type: 'PDF', size: '3.5 MB', url: '#' },
+  { id: 9, title: 'Tài liệu tập huấn về sức khỏe tâm thần cho giáo viên', category: 'Tài liệu chuyên môn', type: 'PPTX', size: '12.4 MB', url: '#' },
+  { id: 10, title: 'Ứng phó với bạo lực học đường và bắt nạt qua mạng', category: 'Xử lý tình huống', type: 'PDF', size: '5.1 MB', url: '#' },
+  { id: 11, title: 'Phát triển trí tuệ cảm xúc (EQ) cho học sinh', category: 'Kỹ năng tham vấn', type: 'PDF', size: '4.7 MB', url: '#' },
+  { id: 12, title: 'Kỹ thuật thư giãn và kiểm soát căng thẳng', category: 'Kỹ năng tham vấn', type: 'Video', size: '45 MB', url: '#' },
 ];
 
 function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [localResources, setLocalResources] = useState(resources);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredResources = activeCategory 
-    ? resources.filter(r => r.category === activeCategory)
-    : resources;
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const newResource = {
+        id: localResources.length + 1,
+        title: file.name,
+        category: activeCategory || 'Tài liệu chuyên môn',
+        type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
+        size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
+        url: '#'
+      };
+      setLocalResources([newResource, ...localResources]);
+      alert(`Đã tải lên thành công: ${file.name}`);
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) {
+      setLocalResources(localResources.filter(r => r.id !== id));
+    }
+  };
+
+  const filteredResources = localResources.filter(r => {
+    const matchesCategory = activeCategory ? r.category === activeCategory : true;
+    const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Nguồn tài nguyên</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Nguồn tài nguyên</h2>
+        <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-[#3b82f6] text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm">
+          <Upload className="w-4 h-4" />
+          Tải tài liệu lên
+          <input type="file" className="hidden" onChange={handleFileUpload} />
+        </label>
+      </div>
       
       <div className="grid grid-cols-3 gap-6 mb-8">
         <button 
@@ -412,6 +454,8 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
             <input 
               type="text" 
               placeholder="Tìm kiếm tài liệu..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className={`pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200'}`}
             />
           </div>
@@ -446,17 +490,29 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
                       <a href={resource.url} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-blue-400 hover:bg-white/5' : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'}`} title="Truy cập / Xem">
                         <ExternalLink className="w-4 h-4" />
                       </a>
-                      {resource.type === 'PDF' && (
+                      {(resource.type === 'PDF' || resource.type === 'DOCX' || resource.type === 'PPTX') && (
                         <a href={resource.url} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-blue-400 hover:bg-white/5' : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'}`} title="Tải xuống">
                           <Download className="w-4 h-4" />
                         </a>
                       )}
+                      <button 
+                        onClick={() => handleDelete(resource.id)}
+                        className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-red-400 hover:bg-white/5' : 'text-gray-500 hover:text-red-600 hover:bg-red-50'}`}
+                        title="Xóa tài liệu"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {filteredResources.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              Không tìm thấy tài liệu nào phù hợp.
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -675,9 +731,99 @@ function SettingsView({ onNavigate, isDarkMode, setIsDarkMode }: { onNavigate: (
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const notifications = [
+    { id: 1, type: 'appointment', title: 'Lịch hẹn: Trần Thị Bình (9B)', time: 'Hôm nay, 14:30', description: 'Tham vấn tâm lý định kỳ.', status: 'upcoming' },
+    { id: 2, type: 'alert', title: 'Cảnh báo: Lê Văn Cường (9A)', time: '10 phút trước', description: 'Phát hiện biểu hiện lo âu cao qua Camera.', status: 'urgent' },
+    { id: 3, type: 'appointment', title: 'Lịch hẹn: Nguyễn Văn An (9A)', time: 'Ngày mai, 09:00', description: 'Theo dõi sau can thiệp.', status: 'upcoming' },
+    { id: 4, type: 'alert', title: 'Cảnh báo: Phạm Minh Tuấn (9B)', time: '2 giờ trước', description: 'Vắng mặt không lý do 2 buổi liên tiếp.', status: 'normal' },
+  ];
+
+  const tools = [
+    { id: 'dashboard', name: 'Dashboard Tổng quan', icon: <Home className="w-4 h-4" />, description: 'Xem số liệu thống kê và tình trạng học sinh' },
+    { id: 'students', name: 'Danh sách học sinh', icon: <Users className="w-4 h-4" />, description: 'Quản lý thông tin và đánh giá học sinh' },
+    { id: 'alerts', name: 'Cảnh báo tâm lý', icon: <AlertTriangle className="w-4 h-4" />, description: 'Theo dõi các trường hợp cần can thiệp gấp' },
+    { id: 'reports', name: 'Báo cáo & Biên bản', icon: <FileText className="w-4 h-4" />, description: 'Lưu trữ biên bản tham vấn và báo cáo định kỳ' },
+    { id: 'resources', name: 'Nguồn tài nguyên', icon: <BookOpen className="w-4 h-4" />, description: 'Tài liệu chuyên môn và kỹ năng tham vấn' },
+    { id: 'settings', name: 'Cài đặt hệ thống', icon: <Settings className="w-4 h-4" />, description: 'Cấu hình tài khoản, giao diện và xuất dữ liệu' },
+    { id: 'camera', name: 'Camera giám sát AI', icon: <Video className="w-4 h-4" />, description: 'Theo dõi trực tiếp và phân tích cảm xúc học sinh' },
+  ];
+
+  const filteredTools = tools.filter(tool => 
+    tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    tool.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className={`flex h-screen font-sans overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-[#eaf4f4] text-gray-800'}`}>
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/60 backdrop-blur-sm">
+          <div 
+            className={`w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`flex items-center px-6 py-4 border-b ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
+              <Search className="w-5 h-5 text-gray-400 mr-4" />
+              <input 
+                autoFocus
+                type="text" 
+                placeholder="Tìm kiếm công cụ, tính năng..." 
+                className={`flex-1 bg-transparent border-none outline-none text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'}`}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setIsSearchOpen(false);
+                }}
+              />
+              <button 
+                onClick={() => setIsSearchOpen(false)}
+                className={`px-2 py-1 rounded text-xs font-medium ${isDarkMode ? 'bg-white/10 text-gray-400 hover:text-white' : 'bg-gray-100 text-gray-500 hover:text-gray-700'}`}
+              >
+                ESC
+              </button>
+            </div>
+            <div className="max-h-[400px] overflow-y-auto p-2">
+              {filteredTools.length > 0 ? (
+                <div className="space-y-1">
+                  {filteredTools.map(tool => (
+                    <button
+                      key={tool.id}
+                      onClick={() => {
+                        setCurrentView(tool.id);
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                      className={`w-full flex items-center gap-4 p-4 rounded-xl text-left transition-colors ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-white/10 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                        {tool.icon}
+                      </div>
+                      <div>
+                        <div className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{tool.name}</div>
+                        <div className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>{tool.description}</div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 ml-auto text-gray-300" />
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center text-gray-500">
+                  Không tìm thấy công cụ nào phù hợp với "{searchQuery}"
+                </div>
+              )}
+            </div>
+            <div className={`px-6 py-3 border-t text-[10px] uppercase tracking-widest font-bold ${isDarkMode ? 'bg-white/5 border-white/10 text-gray-500' : 'bg-gray-50 border-gray-100 text-gray-400'}`}>
+              Nhấn vào công cụ để di chuyển nhanh
+            </div>
+          </div>
+          <div className="fixed inset-0 -z-10" onClick={() => setIsSearchOpen(false)}></div>
+        </div>
+      )}
+
       {/* Sidebar */}
       <aside className={`w-64 flex flex-col shadow-sm z-10 transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border-r border-white/10' : 'bg-white'}`}>
         <div className="p-6">
@@ -769,16 +915,74 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Bar */}
-        <header className={`h-16 flex items-center justify-end px-8 gap-6 backdrop-blur-sm transition-colors duration-300 ${isDarkMode ? 'bg-black/50' : 'bg-white/50'}`}>
-          <button className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+        <header className={`h-16 flex items-center justify-end px-8 gap-6 backdrop-blur-sm sticky top-0 z-20 transition-colors duration-300 ${isDarkMode ? 'bg-black/50' : 'bg-white/50'}`}>
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
+          >
             <Search className="w-5 h-5" />
           </button>
-          <button className={`relative ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}>
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-          </button>
-          <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isDarkMode ? 'bg-white/10 text-white' : 'bg-gray-200 text-gray-600'}`}>
-            <User className="w-5 h-5" />
+          
+          <div className="relative">
+            <button 
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className={`relative p-2 rounded-full transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            {isNotificationsOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)}></div>
+                <div className={`absolute right-0 mt-2 w-80 rounded-2xl shadow-xl z-50 overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white border border-gray-100'}`}>
+                  <div className={`px-4 py-3 border-b flex justify-between items-center ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
+                    <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Thông báo quan trọng</h3>
+                    <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">4 MỚI</span>
+                  </div>
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {notifications.map(notif => (
+                      <button 
+                        key={notif.id}
+                        className={`w-full text-left p-4 border-b last:border-0 transition-colors ${isDarkMode ? 'border-white/5 hover:bg-white/5' : 'border-gray-50 hover:bg-gray-50'}`}
+                        onClick={() => {
+                          if (notif.type === 'alert') setCurrentView('alerts');
+                          if (notif.type === 'appointment') setCurrentView('reports');
+                          setIsNotificationsOpen(false);
+                        }}
+                      >
+                        <div className="flex gap-3">
+                          <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${notif.status === 'urgent' ? 'bg-red-500 animate-pulse' : 'bg-blue-500'}`}></div>
+                          <div className="flex-1">
+                            <div className={`text-sm font-bold mb-0.5 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{notif.title}</div>
+                            <div className={`text-xs mb-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{notif.description}</div>
+                            <div className={`text-[10px] font-medium ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{notif.time}</div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setCurrentView('alerts');
+                      setIsNotificationsOpen(false);
+                    }}
+                    className={`w-full py-3 text-center text-xs font-bold uppercase tracking-wider transition-colors ${isDarkMode ? 'bg-white/5 text-blue-400 hover:text-blue-300' : 'bg-gray-50 text-blue-600 hover:text-blue-700'}`}
+                  >
+                    Xem tất cả thông báo
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          <button className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 transition-transform hover:scale-110">
+            <img 
+              src="https://picsum.photos/seed/baominh/40/40" 
+              alt="Bảo Minh" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
           </button>
         </header>
 
