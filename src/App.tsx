@@ -604,79 +604,7 @@ function CameraMonitoringView({ onBack, isDarkMode }: { onBack: () => void, isDa
   );
 }
 
-function LoginView({ onLogin, isDarkMode }: { onLogin: () => void, isDarkMode: boolean }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simple mock login
-    if (email && password) {
-      onLogin();
-    } else {
-      alert('Vui lòng nhập đầy đủ email và mật khẩu');
-    }
-  };
-
-  return (
-    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${isDarkMode ? 'bg-black' : 'bg-[#eaf4f4]'}`}>
-      <div className={`w-full max-w-md rounded-3xl shadow-2xl overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
-        <div className="p-8">
-          <div className="flex justify-center mb-8">
-            <div className={`w-20 h-20 rounded-2xl flex items-center justify-center ${isDarkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
-              <Smile className="w-12 h-12" />
-            </div>
-          </div>
-          <h1 className={`text-3xl font-bold text-center mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Koufuku</h1>
-          <p className={`text-center mb-8 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Nâng cao Hạnh phúc Học đường</p>
-          
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>Email</label>
-              <div className="relative">
-                <User className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="email" 
-                  placeholder="admin@koufuku.vn"
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>Mật khẩu</label>
-              <div className="relative">
-                <Lock className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                  type="password" 
-                  placeholder="••••••••"
-                  className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-            <button 
-              type="submit"
-              className="w-full py-4 bg-[#3b82f6] text-white rounded-xl font-bold text-lg hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20"
-            >
-              Đăng nhập
-            </button>
-          </form>
-          
-          <div className="mt-8 text-center">
-            <p className={`text-sm ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
-              © 2026 Koufuku Wellbeing Dashboard
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SettingsView({ onNavigate, isDarkMode, setIsDarkMode, onLogout }: { onNavigate: (view: string) => void, isDarkMode: boolean, setIsDarkMode: (val: boolean) => void, onLogout: () => void }) {
+function SettingsView({ onNavigate, isDarkMode, setIsDarkMode }: { onNavigate: (view: string) => void, isDarkMode: boolean, setIsDarkMode: (val: boolean) => void }) {
   const handleExportExcel = () => {
     // Prepare Student Data
     const studentData = markedStudents.map(s => ({
@@ -779,25 +707,6 @@ function SettingsView({ onNavigate, isDarkMode, setIsDarkMode, onLogout }: { onN
             </button>
           </div>
 
-          {/* Logout */}
-          <div className={`flex items-center justify-between p-4 border rounded-xl transition-colors mt-8 ${isDarkMode ? 'border-red-900/30 hover:bg-red-900/10' : 'border-red-100 hover:bg-red-50'}`}>
-            <div className="flex items-center gap-4">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-600'}`}>
-                <LogOut className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className={`font-bold ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Đăng xuất</h3>
-                <p className={`text-sm ${isDarkMode ? 'text-red-900/50' : 'text-red-400'}`}>Đăng xuất khỏi tài khoản hiện tại.</p>
-              </div>
-            </div>
-            <button 
-              onClick={onLogout}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-red-900/50 text-red-200 hover:bg-red-900/70' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
-            >
-              Đăng xuất
-            </button>
-          </div>
-
         </div>
       </div>
     </div>
@@ -805,22 +714,11 @@ function SettingsView({ onNavigate, isDarkMode, setIsDarkMode, onLogout }: { onN
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const handleLogin = () => setIsLoggedIn(true);
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setCurrentView('dashboard');
-  };
-
-  if (!isLoggedIn) {
-    return <LoginView onLogin={handleLogin} isDarkMode={isDarkMode} />;
-  }
 
   const notifications = [
     { id: 1, type: 'appointment', title: 'Lịch hẹn: Trần Thị Bình (9B)', time: 'Hôm nay, 14:30', description: 'Tham vấn tâm lý định kỳ.', status: 'upcoming' },
@@ -996,13 +894,6 @@ export default function App() {
             />
             <span className={`font-medium text-sm ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Bảo Minh</span>
           </div>
-          <button 
-            onClick={handleLogout}
-            className={`w-full mt-4 flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isDarkMode ? 'text-red-400 hover:bg-red-900/20' : 'text-red-600 hover:bg-red-50'}`}
-          >
-            <LogOut className="w-5 h-5" />
-            Đăng xuất
-          </button>
         </div>
       </aside>
 
@@ -1202,7 +1093,7 @@ export default function App() {
         ) : currentView === 'resources' ? (
           <ResourcesView isDarkMode={isDarkMode} />
         ) : currentView === 'settings' ? (
-          <SettingsView onNavigate={setCurrentView} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} onLogout={handleLogout} />
+          <SettingsView onNavigate={setCurrentView} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
         ) : currentView === 'camera' ? (
           <CameraMonitoringView onBack={() => setCurrentView('settings')} isDarkMode={isDarkMode} />
         ) : null}
