@@ -552,7 +552,7 @@ export default function App() {
       {/* Sidebar */}
       <aside className="w-64 bg-white flex flex-col shadow-sm z-10">
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-[#3b82f6] tracking-tight">koufuku</h1>
+          <h1 className="text-3xl font-bold text-[#3b82f6] tracking-tight">Koufuku</h1>
           <p className="text-xs text-gray-500 mt-1">Nâng cao Hạnh phúc Học đường</p>
         </div>
 
