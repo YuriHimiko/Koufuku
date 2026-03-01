@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { utils, writeFile } from 'xlsx';
 import { 
   Home, 
   Users, 
@@ -18,7 +19,11 @@ import {
   LogOut,
   Moon,
   Sun,
-  Video
+  Video,
+  Maximize,
+  Activity,
+  Shield,
+  ArrowLeft
 } from 'lucide-react';
 const markedStudents = [
   { id: 1, name: 'Nguyễn Văn An (9A)', wellbeing: 80, status: 'Theo dõi thêm', color: 'bg-green-500' },
@@ -77,17 +82,17 @@ const recentAlerts = [
   { id: 6, name: 'Học sinh B (9A)', issue: 'Lo âu cao [Đỏ]', color: 'bg-[#fce8e6]' },
 ];
 
-function StudentListView() {
+function StudentListView({ isDarkMode }: { isDarkMode: boolean }) {
   const [isUploaded, setIsUploaded] = useState(false);
 
   if (isUploaded) {
     return (
       <div className="flex-1 overflow-auto p-8">
-        <h2 className="text-2xl font-bold mb-6">Danh sách Học sinh</h2>
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
+        <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Danh sách Học sinh</h2>
+        <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold">Tất cả học sinh</h3>
-            <label className="cursor-pointer px-4 py-2 bg-[#dceaea] text-gray-800 rounded-lg text-sm font-medium hover:bg-[#cce6e6] transition-colors">
+            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Tất cả học sinh</h3>
+            <label className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
               Tải lên file khác
               <input 
                 type="file" 
@@ -101,9 +106,9 @@ function StudentListView() {
               />
             </label>
           </div>
-          <div className="text-center py-12 text-gray-500">
-            <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p>Danh sách học sinh đã được tải lên thành công.</p>
+          <div className={`text-center py-12 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+            <Users className={`w-12 h-12 mx-auto mb-3 ${isDarkMode ? 'text-gray-700' : 'text-gray-300'}`} />
+            <p className={isDarkMode ? 'text-gray-400' : ''}>Danh sách học sinh đã được tải lên thành công.</p>
             <p className="text-sm mt-1">Hệ thống đang xử lý dữ liệu...</p>
           </div>
         </div>
@@ -113,12 +118,12 @@ function StudentListView() {
 
   return (
     <div className="flex-1 overflow-auto p-8 flex flex-col items-center justify-center">
-      <div className="bg-white rounded-2xl p-10 shadow-sm max-w-lg w-full text-center border-2 border-dashed border-gray-200">
-        <div className="w-16 h-16 bg-[#eaf4f4] rounded-full flex items-center justify-center mx-auto mb-4 text-[#3b82f6]">
+      <div className={`rounded-2xl p-10 shadow-sm max-w-lg w-full text-center border-2 border-dashed transition-colors ${isDarkMode ? 'bg-[#121212] border-white/10' : 'bg-white border-gray-200'}`}>
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${isDarkMode ? 'bg-white/5 text-blue-400' : 'bg-[#eaf4f4] text-[#3b82f6]'}`}>
           <FileSpreadsheet className="w-8 h-8" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">Nhập danh sách học sinh</h2>
-        <p className="text-gray-500 mb-8">Tải lên file .xlsx chứa danh sách học sinh của trường để bắt đầu theo dõi.</p>
+        <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Nhập danh sách học sinh</h2>
+        <p className={`mb-8 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Tải lên file .xlsx chứa danh sách học sinh của trường để bắt đầu theo dõi.</p>
         
         <label className="cursor-pointer inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#3b82f6] text-white rounded-xl font-medium hover:bg-blue-600 transition-colors">
           <UploadCloud className="w-5 h-5" />
@@ -139,17 +144,17 @@ function StudentListView() {
   );
 }
 
-function AlertsView() {
+function AlertsView({ isDarkMode }: { isDarkMode: boolean }) {
   const alertStudents = markedStudents.filter(s => s.color === 'bg-yellow-500' || s.color === 'bg-red-500');
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <h2 className="text-2xl font-bold mb-6">Cảnh báo Học sinh</h2>
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <h3 className="text-lg font-bold mb-4">Danh sách cần chú ý (Vàng & Đỏ)</h3>
+      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Cảnh báo Học sinh</h2>
+      <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
+        <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Danh sách cần chú ý (Vàng & Đỏ)</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-gray-500 border-b border-gray-100">
+            <thead className={`${isDarkMode ? 'text-gray-500 border-b border-white/5' : 'text-gray-500 border-b border-gray-100'}`}>
               <tr>
                 <th className="pb-3 font-medium">Học sinh</th>
                 <th className="pb-3 font-medium text-center">Mức độ cảnh báo</th>
@@ -159,13 +164,13 @@ function AlertsView() {
             </thead>
             <tbody>
               {alertStudents.map((student) => (
-                <tr key={student.id} className="border-b border-gray-50 last:border-0">
+                <tr key={student.id} className={`border-b last:border-0 ${isDarkMode ? 'border-white/5' : 'border-gray-50'}`}>
                   <td className="py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-gray-500 ${isDarkMode ? 'bg-white/5' : 'bg-gray-200'}`}>
                         <User className="w-4 h-4" />
                       </div>
-                      <span className="font-medium">{student.name}</span>
+                      <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{student.name}</span>
                     </div>
                   </td>
                   <td className="py-4 align-middle text-center">
@@ -173,11 +178,11 @@ function AlertsView() {
                       {student.color === 'bg-red-500' ? 'Cảnh báo Đỏ' : 'Cảnh báo Vàng'}
                     </span>
                   </td>
-                  <td className="py-4 text-center font-medium">
+                  <td className={`py-4 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                     {student.status}
                   </td>
                   <td className="py-4 text-right">
-                    <button className="px-4 py-1.5 bg-[#dceaea] text-gray-800 rounded-lg text-sm font-medium hover:bg-[#cce6e6] transition-colors">
+                    <button className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
                       Xem chi tiết
                     </button>
                   </td>
@@ -199,7 +204,7 @@ const meetingReports = [
   { id: 5, studentName: 'Vũ Ngọc Vy', class: '9B', date: '20/02/2026', counselor: 'Bảo Minh', summary: 'Học sinh cảm thấy thiếu động lực học tập. Đã cùng học sinh xác định mục tiêu ngắn hạn và dài hạn.', status: 'Đã hoàn thành' },
 ];
 
-function ReportsView() {
+function ReportsView({ isDarkMode }: { isDarkMode: boolean }) {
   const [isCreating, setIsCreating] = useState(false);
 
   if (isCreating) {
@@ -208,19 +213,19 @@ function ReportsView() {
         <div className="flex items-center gap-4 mb-6">
           <button 
             onClick={() => setIsCreating(false)}
-            className="p-2 hover:bg-white rounded-full transition-colors"
+            className={`p-2 rounded-full transition-colors ${isDarkMode ? 'hover:bg-white/10 text-white' : 'hover:bg-white text-gray-800'}`}
           >
             <ChevronRight className="w-5 h-5 rotate-180" />
           </button>
-          <h2 className="text-2xl font-bold">Tạo biên bản mới</h2>
+          <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Tạo biên bản mới</h2>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-sm max-w-3xl">
+        <div className={`rounded-2xl p-8 shadow-sm max-w-3xl transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
           <form className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Học sinh</label>
-                <select className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Học sinh</label>
+                <select className={`w-full border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}>
                   <option value="">Chọn học sinh...</option>
                   {markedStudents.map(s => (
                     <option key={s.id} value={s.id}>{s.name}</option>
@@ -228,67 +233,67 @@ function ReportsView() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Ngày gặp</label>
+                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Ngày gặp</label>
                 <input 
                   type="date" 
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className={`w-full border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}
                   defaultValue={new Date().toISOString().split('T')[0]}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Lý do gặp gỡ / Vấn đề chính</label>
+              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Lý do gặp gỡ / Vấn đề chính</label>
               <input 
                 type="text" 
                 placeholder="Ví dụ: Áp lực học tập, mâu thuẫn bạn bè..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                className={`w-full border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nội dung trao đổi chi tiết</label>
+              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Nội dung trao đổi chi tiết</label>
               <textarea 
                 rows={5}
                 placeholder="Ghi chú lại những điểm chính đã trao đổi với học sinh..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                className={`w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}
               ></textarea>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Đề xuất / Hướng giải quyết</label>
+              <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Đề xuất / Hướng giải quyết</label>
               <textarea 
                 rows={3}
                 placeholder="Các bước tiếp theo, lời khuyên hoặc hành động cần thực hiện..."
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                className={`w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}
               ></textarea>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
-                <select className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Trạng thái</label>
+                <select className={`w-full border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-gray-50 border-gray-200'}`}>
                   <option value="Đang theo dõi">Đang theo dõi</option>
                   <option value="Đã hoàn thành">Đã hoàn thành</option>
                   <option value="Cần can thiệp khẩn cấp">Cần can thiệp khẩn cấp</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phụ trách</label>
+                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Phụ trách</label>
                 <input 
                   type="text" 
                   defaultValue="Bảo Minh"
                   disabled
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 bg-gray-100 text-gray-500 outline-none cursor-not-allowed"
+                  className={`w-full border rounded-xl px-4 py-2.5 outline-none cursor-not-allowed ${isDarkMode ? 'bg-white/10 border-white/10 text-gray-500' : 'bg-gray-100 border-gray-200 text-gray-500'}`}
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <div className={`flex justify-end gap-3 pt-4 border-t ${isDarkMode ? 'border-white/5' : 'border-gray-100'}`}>
               <button 
                 type="button"
                 onClick={() => setIsCreating(false)}
-                className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-colors"
+                className={`px-6 py-2.5 rounded-xl font-medium transition-colors ${isDarkMode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Hủy bỏ
               </button>
@@ -308,10 +313,10 @@ function ReportsView() {
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <h2 className="text-2xl font-bold mb-6">Báo cáo & Biên bản</h2>
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Báo cáo & Biên bản</h2>
+      <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-bold">Biên bản gặp gỡ học sinh gần đây</h3>
+          <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Biên bản gặp gỡ học sinh gần đây</h3>
           <button 
             onClick={() => setIsCreating(true)}
             className="px-4 py-2 bg-[#3b82f6] text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
@@ -322,26 +327,26 @@ function ReportsView() {
         
         <div className="grid gap-4">
           {meetingReports.map((report) => (
-            <div key={report.id} className="border border-gray-100 rounded-xl p-5 hover:border-blue-100 hover:shadow-sm transition-all bg-gray-50/50">
+            <div key={report.id} className={`rounded-xl p-5 hover:shadow-sm transition-all border ${isDarkMode ? 'bg-white/5 border-white/5 hover:border-white/10' : 'bg-gray-50/50 border-gray-100 hover:border-blue-100'}`}>
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="font-bold text-lg text-gray-800">{report.studentName} <span className="text-sm font-normal text-gray-500">({report.class})</span></h4>
-                  <p className="text-sm text-gray-500 mt-1">Ngày gặp: {report.date} • Phụ trách: {report.counselor}</p>
+                  <h4 className={`font-bold text-lg ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{report.studentName} <span className={`text-sm font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>({report.class})</span></h4>
+                  <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Ngày gặp: {report.date} • Phụ trách: {report.counselor}</p>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${report.status === 'Đã hoàn thành' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
                   {report.status}
                 </span>
               </div>
-              <div className="bg-white p-4 rounded-lg border border-gray-100 mt-3">
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  <span className="font-medium text-gray-900">Nội dung tóm tắt:</span> {report.summary}
+              <div className={`p-4 rounded-lg border mt-3 ${isDarkMode ? 'bg-white/5 border-white/5' : 'bg-white border-gray-100'}`}>
+                <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
+                  <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Nội dung tóm tắt:</span> {report.summary}
                 </p>
               </div>
               <div className="mt-4 flex justify-end gap-2">
-                <button className="px-3 py-1.5 text-gray-600 hover:bg-gray-100 rounded-md text-sm font-medium transition-colors">
+                <button className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isDarkMode ? 'text-gray-400 hover:bg-white/10' : 'text-gray-600 hover:bg-gray-100'}`}>
                   Chỉnh sửa
                 </button>
-                <button className="px-3 py-1.5 bg-[#dceaea] text-gray-800 rounded-md text-sm font-medium hover:bg-[#cce6e6] transition-colors">
+                <button className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isDarkMode ? 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
                   Xem chi tiết
                 </button>
               </div>
@@ -361,7 +366,7 @@ const resources = [
   { id: 5, title: 'Cẩm nang Truyền thông Sức khỏe Tâm thần (Bộ Y tế)', category: 'Tài liệu chuyên môn', type: 'Website', size: 'Online', url: 'https://moh.gov.vn/' },
 ];
 
-function ResourcesView() {
+function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const filteredResources = activeCategory 
@@ -370,51 +375,51 @@ function ResourcesView() {
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <h2 className="text-2xl font-bold mb-6">Nguồn tài nguyên</h2>
+      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Nguồn tài nguyên</h2>
       
       <div className="grid grid-cols-3 gap-6 mb-8">
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Tài liệu chuyên môn' ? null : 'Tài liệu chuyên môn')}
-          className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Tài liệu chuyên môn' ? 'bg-blue-100 border-blue-300 shadow-md' : 'bg-blue-50 border-blue-100 hover:bg-blue-100/50'}`}
+          className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Tài liệu chuyên môn' ? (isDarkMode ? 'bg-blue-900/30 border-blue-500 shadow-lg' : 'bg-blue-100 border-blue-300 shadow-md') : (isDarkMode ? 'bg-[#1a1a1a] border-white/5 hover:bg-white/5' : 'bg-blue-50 border-blue-100 hover:bg-blue-100/50')}`}
         >
-          <BookOpen className="w-8 h-8 text-blue-500 mb-3" />
-          <h3 className="font-bold text-lg mb-1">Tài liệu chuyên môn</h3>
-          <p className="text-sm text-gray-600">Các nghiên cứu, cẩm nang và hướng dẫn chẩn đoán.</p>
+          <BookOpen className={`w-8 h-8 mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+          <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Tài liệu chuyên môn</h3>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>Các nghiên cứu, cẩm nang và hướng dẫn chẩn đoán.</p>
         </button>
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Kỹ năng tham vấn' ? null : 'Kỹ năng tham vấn')}
-          className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Kỹ năng tham vấn' ? 'bg-green-100 border-green-300 shadow-md' : 'bg-green-50 border-green-100 hover:bg-green-100/50'}`}
+          className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Kỹ năng tham vấn' ? (isDarkMode ? 'bg-green-900/30 border-green-500 shadow-lg' : 'bg-green-100 border-green-300 shadow-md') : (isDarkMode ? 'bg-[#1a1a1a] border-white/5 hover:bg-white/5' : 'bg-green-50 border-green-100 hover:bg-green-100/50')}`}
         >
-          <Users className="w-8 h-8 text-green-500 mb-3" />
-          <h3 className="font-bold text-lg mb-1">Kỹ năng tham vấn</h3>
-          <p className="text-sm text-gray-600">Tài liệu đào tạo kỹ năng giao tiếp và thấu cảm.</p>
+          <Users className={`w-8 h-8 mb-3 ${isDarkMode ? 'text-green-400' : 'text-green-500'}`} />
+          <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Kỹ năng tham vấn</h3>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>Tài liệu đào tạo kỹ năng giao tiếp và thấu cảm.</p>
         </button>
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Xử lý tình huống' ? null : 'Xử lý tình huống')}
-          className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Xử lý tình huống' ? 'bg-orange-100 border-orange-300 shadow-md' : 'bg-orange-50 border-orange-100 hover:bg-orange-100/50'}`}
+          className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Xử lý tình huống' ? (isDarkMode ? 'bg-orange-900/30 border-orange-500 shadow-lg' : 'bg-orange-100 border-orange-300 shadow-md') : (isDarkMode ? 'bg-[#1a1a1a] border-white/5 hover:bg-white/5' : 'bg-orange-50 border-orange-100 hover:bg-orange-100/50')}`}
         >
-          <AlertTriangle className="w-8 h-8 text-orange-500 mb-3" />
-          <h3 className="font-bold text-lg mb-1">Xử lý tình huống</h3>
-          <p className="text-sm text-gray-600">Quy trình chuẩn để xử lý các ca khủng hoảng.</p>
+          <AlertTriangle className={`w-8 h-8 mb-3 ${isDarkMode ? 'text-orange-400' : 'text-orange-500'}`} />
+          <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Xử lý tình huống</h3>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>Quy trình chuẩn để xử lý các ca khủng hoảng.</p>
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-bold">{activeCategory ? `Tài liệu: ${activeCategory}` : 'Tài liệu nổi bật'}</h3>
+          <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{activeCategory ? `Tài liệu: ${activeCategory}` : 'Tài liệu nổi bật'}</h3>
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Tìm kiếm tài liệu..." 
-              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200'}`}
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-gray-500 border-b border-gray-100">
+            <thead className={`${isDarkMode ? 'text-gray-500 border-b border-white/5' : 'text-gray-500 border-b border-gray-100'}`}>
               <tr>
                 <th className="pb-3 font-medium">Tên tài liệu</th>
                 <th className="pb-3 font-medium">Danh mục</th>
@@ -424,25 +429,25 @@ function ResourcesView() {
             </thead>
             <tbody>
               {filteredResources.map((resource) => (
-                <tr key={resource.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                  <td className="py-4 font-medium text-gray-800">
+                <tr key={resource.id} className={`border-b last:border-0 transition-colors ${isDarkMode ? 'border-white/5 hover:bg-white/5' : 'border-gray-50 hover:bg-gray-50/50'}`}>
+                  <td className={`py-4 font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                     {resource.title}
                   </td>
-                  <td className="py-4 text-gray-600">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                  <td className={`py-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-100 text-gray-800'}`}>
                       {resource.category}
                     </span>
                   </td>
-                  <td className="py-4 text-gray-500">
+                  <td className={`py-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>
                     {resource.type} • {resource.size}
                   </td>
                   <td className="py-4 text-right">
                     <div className="flex justify-end gap-2">
-                      <a href={resource.url} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Truy cập / Xem">
+                      <a href={resource.url} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-blue-400 hover:bg-white/5' : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'}`} title="Truy cập / Xem">
                         <ExternalLink className="w-4 h-4" />
                       </a>
                       {resource.type === 'PDF' && (
-                        <a href={resource.url} target="_blank" rel="noopener noreferrer" className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Tải xuống">
+                        <a href={resource.url} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-blue-400 hover:bg-white/5' : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'}`} title="Tải xuống">
                           <Download className="w-4 h-4" />
                         </a>
                       )}
@@ -458,62 +463,185 @@ function ResourcesView() {
   );
 }
 
-function SettingsView() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+function CameraMonitoringView({ onBack, isDarkMode }: { onBack: () => void, isDarkMode: boolean }) {
+  const cameras = [
+    { id: 1, name: 'Lớp 9A - Phòng 101', status: 'Live', emotion: 'Tập trung', count: 28, color: 'text-indigo-500', video: 'https://assets.mixkit.co/videos/preview/mixkit-students-in-a-classroom-1536-large.mp4' },
+    { id: 2, name: 'Lớp 9B - Phòng 102', status: 'Live', emotion: 'Vui vẻ', count: 30, color: 'text-green-500', video: 'https://assets.mixkit.co/videos/preview/mixkit-teacher-explaining-a-topic-to-her-students-41551-large.mp4' },
+    { id: 3, name: 'Thư viện Trung tâm', status: 'Live', emotion: 'Yên tĩnh', count: 15, color: 'text-blue-500', video: 'https://assets.mixkit.co/videos/preview/mixkit-group-of-students-working-in-a-library-41550-large.mp4' },
+    { id: 4, name: 'Hành lang Chính', status: 'Live', emotion: 'Bình thường', count: 12, color: 'text-orange-500', video: 'https://assets.mixkit.co/videos/preview/mixkit-students-walking-in-a-university-hallway-41549-large.mp4' },
+  ];
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <h2 className="text-2xl font-bold mb-6">Cài đặt</h2>
+      <div className="flex items-center gap-4 mb-6">
+        <button 
+          onClick={onBack}
+          className={`p-2 rounded-full transition-colors ${isDarkMode ? 'hover:bg-white/10 text-white' : 'hover:bg-gray-100 text-gray-800'}`}
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Hệ thống Giám sát Camera AI</h2>
+        <div className="ml-auto flex items-center gap-2 bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+          <Activity className="w-3 h-3" /> LIVE
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        {cameras.map((cam) => (
+          <div key={cam.id} className={`rounded-2xl overflow-hidden relative group aspect-video shadow-xl border-4 transition-colors ${isDarkMode ? 'bg-black border-white/10' : 'bg-black border-white'}`}>
+            {/* Simulated Video Feed */}
+            <video 
+              src={cam.video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-70"
+            />
+            
+            {/* AI Overlays */}
+            <div className="absolute inset-0 p-4 flex flex-col justify-between pointer-events-none">
+              <div className="flex justify-between items-start">
+                <div className="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20">
+                  <p className="text-white text-xs font-bold flex items-center gap-2">
+                    <Shield className="w-3 h-3 text-blue-400" /> {cam.name}
+                  </p>
+                </div>
+                <div className="bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20">
+                  <p className="text-white text-[10px] font-mono">REC 00:42:15</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-end">
+                <div className="space-y-2">
+                  <div className="bg-white/10 backdrop-blur-md p-2 rounded-lg border border-white/10">
+                    <p className="text-white text-[10px] uppercase tracking-wider opacity-70">Phân tích cảm xúc</p>
+                    <p className={`text-sm font-bold ${cam.color}`}>{cam.emotion}</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md p-2 rounded-lg border border-white/10">
+                    <p className="text-white text-[10px] uppercase tracking-wider opacity-70">Số người</p>
+                    <p className="text-white text-sm font-bold">{cam.count}</p>
+                  </div>
+                </div>
+                <button className="p-2 bg-white/20 hover:bg-white/40 rounded-lg backdrop-blur-md transition-all pointer-events-auto">
+                  <Maximize className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Scanning Effect */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="w-full h-[2px] bg-blue-500/30 absolute top-0 animate-[scan_3s_linear_infinite]"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes scan {
+          0% { top: 0; }
+          100% { top: 100%; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function SettingsView({ onNavigate, isDarkMode, setIsDarkMode }: { onNavigate: (view: string) => void, isDarkMode: boolean, setIsDarkMode: (val: boolean) => void }) {
+  const handleExportExcel = () => {
+    // Prepare Student Data
+    const studentData = markedStudents.map(s => ({
+      'ID': s.id,
+      'Họ và tên': s.name,
+      'Chỉ số Hạnh phúc': s.wellbeing,
+      'Trạng thái': s.status
+    }));
+
+    // Prepare Report Data
+    const reportData = meetingReports.map(r => ({
+      'ID': r.id,
+      'Học sinh': r.studentName,
+      'Lớp': r.class,
+      'Ngày gặp': r.date,
+      'Người phụ trách': r.counselor,
+      'Nội dung tóm tắt': r.summary,
+      'Trạng thái': r.status
+    }));
+
+    // Create Workbook
+    const wb = utils.book_new();
+
+    // Add Student Sheet
+    const wsStudents = utils.json_to_sheet(studentData);
+    utils.book_append_sheet(wb, wsStudents, "Danh sách Học sinh");
+
+    // Add Report Sheet
+    const wsReports = utils.json_to_sheet(reportData);
+    utils.book_append_sheet(wb, wsReports, "Biên bản Tham vấn");
+
+    // Save File
+    writeFile(wb, "Du_lieu_Hoc_sinh_Koufuku.xlsx");
+  };
+
+  return (
+    <div className="flex-1 overflow-auto p-8">
+      <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Cài đặt</h2>
       
-      <div className="bg-white rounded-2xl p-6 shadow-sm max-w-3xl">
+      <div className={`rounded-2xl p-6 shadow-sm max-w-3xl transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
         <div className="space-y-6">
           
           {/* Export Data */}
-          <div className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+          <div className={`flex items-center justify-between p-4 border rounded-xl transition-colors ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
                 <Download className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Xuất dữ liệu học sinh</h3>
-                <p className="text-sm text-gray-500">Tải xuống toàn bộ dữ liệu đánh giá và biên bản dưới dạng Excel.</p>
+                <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Xuất dữ liệu học sinh</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Tải xuống toàn bộ dữ liệu đánh giá và biên bản dưới dạng Excel.</p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-[#dceaea] text-gray-800 rounded-lg text-sm font-medium hover:bg-[#cce6e6] transition-colors">
+            <button 
+              onClick={handleExportExcel}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}
+            >
               Xuất file
             </button>
           </div>
 
           {/* Camera Monitoring */}
-          <div className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+          <div className={`flex items-center justify-between p-4 border rounded-xl transition-colors ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center text-purple-600">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-50 text-purple-600'}`}>
                 <Video className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Khung camera giám sát trực tiếp</h3>
-                <p className="text-sm text-gray-500">Kết nối với hệ thống camera AI để phân tích cảm xúc thời gian thực.</p>
+                <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Khung camera giám sát trực tiếp</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Kết nối với hệ thống camera AI để phân tích cảm xúc thời gian thực.</p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm font-medium hover:bg-purple-200 transition-colors">
+            <button 
+              onClick={() => onNavigate('camera')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-purple-900/50 text-purple-200 hover:bg-purple-900/70' : 'bg-purple-100 text-purple-700 hover:bg-purple-200'}`}
+            >
               Mở camera
             </button>
           </div>
 
           {/* Theme Toggle */}
-          <div className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+          <div className={`flex items-center justify-between p-4 border rounded-xl transition-colors ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center text-orange-600">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-50 text-orange-600'}`}>
                 {isDarkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
               </div>
               <div>
-                <h3 className="font-bold text-gray-800">Chủ đề giao diện</h3>
-                <p className="text-sm text-gray-500">Chuyển đổi giữa chế độ Sáng và Tối.</p>
+                <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Chủ đề giao diện</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Chuyển đổi giữa chế độ Sáng và Tối.</p>
               </div>
             </div>
             <button 
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               style={{ backgroundColor: isDarkMode ? '#3b82f6' : '#e5e7eb' }}
             >
               <span 
@@ -523,17 +651,17 @@ function SettingsView() {
           </div>
 
           {/* Logout */}
-          <div className="flex items-center justify-between p-4 border border-red-100 rounded-xl hover:bg-red-50 transition-colors mt-8">
+          <div className={`flex items-center justify-between p-4 border rounded-xl transition-colors mt-8 ${isDarkMode ? 'border-red-900/30 hover:bg-red-900/10' : 'border-red-100 hover:bg-red-50'}`}>
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center text-red-600">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-600'}`}>
                 <LogOut className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-red-600">Đăng xuất</h3>
-                <p className="text-sm text-red-400">Đăng xuất khỏi tài khoản hiện tại.</p>
+                <h3 className={`font-bold ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Đăng xuất</h3>
+                <p className={`text-sm ${isDarkMode ? 'text-red-900/50' : 'text-red-400'}`}>Đăng xuất khỏi tài khoản hiện tại.</p>
               </div>
             </div>
-            <button className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors">
+            <button className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-red-900/50 text-red-200 hover:bg-red-900/70' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}>
               Đăng xuất
             </button>
           </div>
@@ -546,62 +674,86 @@ function SettingsView() {
 
 export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   return (
-    <div className="flex h-screen bg-[#eaf4f4] font-sans text-gray-800 overflow-hidden">
+    <div className={`flex h-screen font-sans overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-[#eaf4f4] text-gray-800'}`}>
       {/* Sidebar */}
-      <aside className="w-64 bg-white flex flex-col shadow-sm z-10">
+      <aside className={`w-64 flex flex-col shadow-sm z-10 transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border-r border-white/10' : 'bg-white'}`}>
         <div className="p-6">
           <h1 className="text-3xl font-bold text-[#3b82f6] tracking-tight">Koufuku</h1>
-          <p className="text-xs text-gray-500 mt-1">Nâng cao Hạnh phúc Học đường</p>
         </div>
 
         <nav className="flex-1 px-4 space-y-2 mt-4">
           <button 
             onClick={() => setCurrentView('dashboard')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${currentView === 'dashboard' ? 'bg-[#dceaea] text-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+              currentView === 'dashboard' 
+                ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-[#dceaea] text-gray-800') 
+                : (isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+            }`}
           >
-            <Home className={`w-5 h-5 ${currentView === 'dashboard' ? 'text-gray-800' : 'text-gray-600'}`} />
+            <Home className={`w-5 h-5 ${currentView === 'dashboard' ? (isDarkMode ? 'text-white' : 'text-gray-800') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`} />
             Dashboard
           </button>
           <button 
             onClick={() => setCurrentView('students')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${currentView === 'students' ? 'bg-[#dceaea] text-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+              currentView === 'students' 
+                ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-[#dceaea] text-gray-800') 
+                : (isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+            }`}
           >
-            <Users className={`w-5 h-5 ${currentView === 'students' ? 'text-gray-800' : 'text-gray-600'}`} />
+            <Users className={`w-5 h-5 ${currentView === 'students' ? (isDarkMode ? 'text-white' : 'text-gray-800') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`} />
             Danh sách Học sinh
           </button>
           <button 
             onClick={() => setCurrentView('alerts')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${currentView === 'alerts' ? 'bg-[#dceaea] text-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+              currentView === 'alerts' 
+                ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-[#dceaea] text-gray-800') 
+                : (isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+            }`}
           >
-            <AlertTriangle className={`w-5 h-5 ${currentView === 'alerts' ? 'text-gray-800' : 'text-gray-600'}`} />
+            <AlertTriangle className={`w-5 h-5 ${currentView === 'alerts' ? (isDarkMode ? 'text-white' : 'text-gray-800') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`} />
             Cảnh báo
           </button>
           <button 
             onClick={() => setCurrentView('reports')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${currentView === 'reports' ? 'bg-[#dceaea] text-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+              currentView === 'reports' 
+                ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-[#dceaea] text-gray-800') 
+                : (isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+            }`}
           >
-            <FileText className={`w-5 h-5 ${currentView === 'reports' ? 'text-gray-800' : 'text-gray-600'}`} />
+            <FileText className={`w-5 h-5 ${currentView === 'reports' ? (isDarkMode ? 'text-white' : 'text-gray-800') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`} />
             Báo cáo
           </button>
           <button 
             onClick={() => setCurrentView('resources')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${currentView === 'resources' ? 'bg-[#dceaea] text-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+              currentView === 'resources' 
+                ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-[#dceaea] text-gray-800') 
+                : (isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+            }`}
           >
-            <BookOpen className={`w-5 h-5 ${currentView === 'resources' ? 'text-gray-800' : 'text-gray-600'}`} />
+            <BookOpen className={`w-5 h-5 ${currentView === 'resources' ? (isDarkMode ? 'text-white' : 'text-gray-800') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`} />
             Nguồn tài nguyên
           </button>
           <button 
             onClick={() => setCurrentView('settings')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${currentView === 'settings' ? 'bg-[#dceaea] text-gray-800' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${
+              currentView === 'settings' 
+                ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-[#dceaea] text-gray-800') 
+                : (isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-50')
+            }`}
           >
-            <Settings className={`w-5 h-5 ${currentView === 'settings' ? 'text-gray-800' : 'text-gray-600'}`} />
+            <Settings className={`w-5 h-5 ${currentView === 'settings' ? (isDarkMode ? 'text-white' : 'text-gray-800') : (isDarkMode ? 'text-gray-400' : 'text-gray-600')}`} />
             Cài đặt
           </button>
         </nav>
 
-        <div className="p-4 border-t border-gray-100">
+        <div className={`p-4 border-t transition-colors duration-300 ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
           <div className="flex items-center gap-3 px-2">
             <img 
               src="https://picsum.photos/seed/baominh/40/40" 
@@ -609,7 +761,7 @@ export default function App() {
               className="w-10 h-10 rounded-full object-cover"
               referrerPolicy="no-referrer"
             />
-            <span className="font-medium text-sm">Bảo Minh</span>
+            <span className={`font-medium text-sm ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Bảo Minh</span>
           </div>
         </div>
       </aside>
@@ -617,15 +769,15 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Bar */}
-        <header className="h-16 flex items-center justify-end px-8 gap-6 bg-white/50 backdrop-blur-sm">
-          <button className="text-gray-500 hover:text-gray-700">
+        <header className={`h-16 flex items-center justify-end px-8 gap-6 backdrop-blur-sm transition-colors duration-300 ${isDarkMode ? 'bg-black/50' : 'bg-white/50'}`}>
+          <button className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}>
             <Search className="w-5 h-5" />
           </button>
-          <button className="text-gray-500 hover:text-gray-700 relative">
+          <button className={`relative ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}>
             <Bell className="w-5 h-5" />
             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
           </button>
-          <button className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600">
+          <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isDarkMode ? 'bg-white/10 text-white' : 'bg-gray-200 text-gray-600'}`}>
             <User className="w-5 h-5" />
           </button>
         </header>
@@ -633,24 +785,24 @@ export default function App() {
         {/* Dashboard Content */}
         {currentView === 'dashboard' ? (
         <div className="flex-1 overflow-auto p-8">
-          <h2 className="text-2xl font-bold mb-6">Dashboard Tổng quan</h2>
+          <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Dashboard Tổng quan</h2>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="bg-[#dcfce7] rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-              <span className="text-sm text-gray-600 font-medium">Tổng số học sinh:</span>
+            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#dcfce7]'}`}>
+              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Tổng số học sinh:</span>
               <span className="text-3xl font-bold mt-2">120</span>
             </div>
-            <div className="bg-white rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-              <span className="text-sm text-gray-600 font-medium">Lớp</span>
+            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white'}`}>
+              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Lớp</span>
               <span className="text-xl font-bold mt-2">Lớp 9A, 9B</span>
             </div>
-            <div className="bg-[#fef3c7] rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-              <span className="text-sm text-gray-600 font-medium">Học sinh cần theo dõi:</span>
+            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#fef3c7]'}`}>
+              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Học sinh cần theo dõi:</span>
               <span className="text-3xl font-bold mt-2">8</span>
             </div>
-            <div className="bg-[#fce8e6] rounded-2xl p-4 shadow-sm flex flex-col justify-between relative">
-              <span className="text-sm text-gray-600 font-medium">Cảnh báo cao (Đỏ):</span>
+            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between relative transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#fce8e6]'}`}>
+              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Cảnh báo cao (Đỏ):</span>
               <div className="flex items-end justify-between mt-2">
                 <span className="text-3xl font-bold">3</span>
                 <AlertTriangle className="w-6 h-6 text-red-500 mb-1" />
@@ -663,11 +815,11 @@ export default function App() {
             <div className="col-span-2 flex flex-col gap-6">
               
               {/* Marked Students Table */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 className="text-lg font-bold mb-4">Học sinh được Đánh dấu</h3>
+              <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
+                <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Học sinh được Đánh dấu</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className="text-gray-500 border-b border-gray-100">
+                    <thead className={`${isDarkMode ? 'text-gray-500 border-b border-white/5' : 'text-gray-500 border-b border-gray-100'}`}>
                       <tr>
                         <th className="pb-3 font-medium">Học sinh</th>
                         <th className="pb-3 font-medium text-center">Wellbeing</th>
@@ -677,28 +829,28 @@ export default function App() {
                     </thead>
                     <tbody>
                       {markedStudents.map((student) => (
-                        <tr key={student.id} className="border-b border-gray-50 last:border-0">
+                        <tr key={student.id} className={`border-b last:border-0 ${isDarkMode ? 'border-white/5' : 'border-gray-50'}`}>
                           <td className="py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-gray-500 ${isDarkMode ? 'bg-white/5' : 'bg-gray-200'}`}>
                                 <User className="w-4 h-4" />
                               </div>
-                              <span className="font-medium">{student.name}</span>
+                              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{student.name}</span>
                             </div>
                           </td>
                           <td className="py-4 align-middle">
-                            <div className="w-24 h-2 bg-gray-100 rounded-full mx-auto overflow-hidden">
+                            <div className={`w-24 h-2 rounded-full mx-auto overflow-hidden ${isDarkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
                               <div 
                                 className={`h-full rounded-full ${student.color}`} 
                                 style={{ width: `${student.wellbeing}%` }}
                               ></div>
                             </div>
                           </td>
-                          <td className="py-4 text-center font-medium">
+                          <td className={`py-4 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                             {student.status}
                           </td>
                           <td className="py-4 text-right">
-                            <button className="px-4 py-1.5 bg-[#dceaea] text-gray-800 rounded-lg text-sm font-medium hover:bg-[#cce6e6] transition-colors">
+                            <button className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
                               Hành động
                             </button>
                           </td>
@@ -715,23 +867,23 @@ export default function App() {
             <div className="col-span-1">
               <div className="bg-transparent h-full flex flex-col">
                 <div className="flex justify-between items-center mb-4 px-2">
-                  <h3 className="text-lg font-bold">Cảnh báo Tâm lý Gần đây</h3>
-                  <a href="#" className="text-xs text-gray-500 hover:text-gray-800 flex items-center">
+                  <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Cảnh báo Tâm lý Gần đây</h3>
+                  <a href="#" className={`text-xs flex items-center ${isDarkMode ? 'text-gray-500 hover:text-white' : 'text-gray-500 hover:text-gray-800'}`}>
                     Xem tất cả <ChevronRight className="w-3 h-3 ml-1" />
                   </a>
                 </div>
                 
                 <div className="flex flex-col gap-3">
                   {recentAlerts.map((alert) => (
-                    <div key={alert.id} className={`${alert.color} rounded-2xl p-4 shadow-sm flex items-start gap-3`}>
-                      <div className="w-10 h-10 bg-gray-200/50 rounded-full flex items-center justify-center text-gray-600 shrink-0 mt-1">
+                    <div key={alert.id} className={`${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : alert.color} rounded-2xl p-4 shadow-sm flex items-start gap-3 transition-colors`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-1 ${isDarkMode ? 'bg-white/5 text-gray-400' : 'bg-gray-200/50 text-gray-600'}`}>
                         <User className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-sm leading-snug mb-2">
+                        <p className={`font-medium text-sm leading-snug mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                           {alert.name} - {alert.issue}
                         </p>
-                        <button className="px-3 py-1 bg-white/60 hover:bg-white/80 text-gray-800 rounded-md text-xs font-medium transition-colors border border-black/5">
+                        <button className={`px-3 py-1 rounded-md text-xs font-medium transition-colors border ${isDarkMode ? 'bg-white/10 text-white border-white/10 hover:bg-white/20' : 'bg-white/60 text-gray-800 border-black/5 hover:bg-white/80'}`}>
                           Xem chi tiết
                         </button>
                       </div>
@@ -744,15 +896,17 @@ export default function App() {
           </div>
         </div>
         ) : currentView === 'students' ? (
-          <StudentListView />
+          <StudentListView isDarkMode={isDarkMode} />
         ) : currentView === 'alerts' ? (
-          <AlertsView />
+          <AlertsView isDarkMode={isDarkMode} />
         ) : currentView === 'reports' ? (
-          <ReportsView />
+          <ReportsView isDarkMode={isDarkMode} />
         ) : currentView === 'resources' ? (
-          <ResourcesView />
+          <ResourcesView isDarkMode={isDarkMode} />
         ) : currentView === 'settings' ? (
-          <SettingsView />
+          <SettingsView onNavigate={setCurrentView} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        ) : currentView === 'camera' ? (
+          <CameraMonitoringView onBack={() => setCurrentView('settings')} isDarkMode={isDarkMode} />
         ) : null}
       </main>
     </div>
