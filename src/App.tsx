@@ -157,12 +157,12 @@ function AlertsView({ isDarkMode }: { isDarkMode: boolean }) {
         <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Danh sách cần chú ý (Vàng & Đỏ)</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className={`${isDarkMode ? 'text-gray-500 border-b border-white/5' : 'text-gray-500 border-b border-gray-100'}`}>
+            <thead className={`${isDarkMode ? 'border-b border-white/10' : 'text-gray-500 border-b border-gray-200'}`}>
               <tr>
-                <th className="pb-3 font-medium">Học sinh</th>
-                <th className="pb-3 font-medium text-center">Mức độ cảnh báo</th>
-                <th className="pb-3 font-medium text-center">Trạng thái</th>
-                <th className="pb-3 font-medium text-right">Hành động</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Học sinh</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-center ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Mức độ cảnh báo</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-center ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Trạng thái</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-right ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -411,23 +411,23 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
 
   return (
     <div className="flex-1 overflow-auto p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Nguồn tài nguyên</h2>
-        <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-[#3b82f6] text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className={`text-2xl font-bold leading-none ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Nguồn tài nguyên</h2>
+        <label className="cursor-pointer flex items-center justify-center gap-2 px-5 py-2.5 bg-[#3b82f6] text-white rounded-xl text-sm font-semibold hover:bg-blue-600 transition-all shadow-md active:scale-95">
           <Upload className="w-4 h-4" />
           Tải tài liệu lên
           <input type="file" className="hidden" onChange={handleFileUpload} />
         </label>
       </div>
       
-      <div className="grid grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-3 gap-6 mb-10">
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Tài liệu chuyên môn' ? null : 'Tài liệu chuyên môn')}
           className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Tài liệu chuyên môn' ? (isDarkMode ? 'bg-blue-900/30 border-blue-500 shadow-lg' : 'bg-blue-100 border-blue-300 shadow-md') : (isDarkMode ? 'bg-[#1a1a1a] border-white/5 hover:bg-white/5' : 'bg-blue-50 border-blue-100 hover:bg-blue-100/50')}`}
         >
           <BookOpen className={`w-8 h-8 mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-500'}`} />
           <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Tài liệu chuyên môn</h3>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>Các nghiên cứu, cẩm nang và hướng dẫn chẩn đoán.</p>
+          <p className={`text-sm ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-600'}`}>Các nghiên cứu, cẩm nang và hướng dẫn chẩn đoán.</p>
         </button>
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Kỹ năng tham vấn' ? null : 'Kỹ năng tham vấn')}
@@ -435,7 +435,7 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
         >
           <Users className={`w-8 h-8 mb-3 ${isDarkMode ? 'text-green-400' : 'text-green-500'}`} />
           <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Kỹ năng tham vấn</h3>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>Tài liệu đào tạo kỹ năng giao tiếp và thấu cảm.</p>
+          <p className={`text-sm ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-600'}`}>Tài liệu đào tạo kỹ năng giao tiếp và thấu cảm.</p>
         </button>
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Xử lý tình huống' ? null : 'Xử lý tình huống')}
@@ -443,33 +443,33 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
         >
           <AlertTriangle className={`w-8 h-8 mb-3 ${isDarkMode ? 'text-orange-400' : 'text-orange-500'}`} />
           <h3 className={`font-bold text-lg mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Xử lý tình huống</h3>
-          <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>Quy trình chuẩn để xử lý các ca khủng hoảng.</p>
+          <p className={`text-sm ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-600'}`}>Quy trình chuẩn để xử lý các ca khủng hoảng.</p>
         </button>
       </div>
 
       <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{activeCategory ? `Tài liệu: ${activeCategory}` : 'Tài liệu nổi bật'}</h3>
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <div className="flex justify-between items-center mb-8">
+          <h3 className={`text-lg font-bold leading-none ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{activeCategory ? `Tài liệu: ${activeCategory}` : 'Tài liệu nổi bật'}</h3>
+          <div className="relative ml-6">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder="Tìm kiếm tài liệu..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200'}`}
+              className={`pl-10 pr-4 py-2.5 w-64 md:w-80 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200'}`}
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className={`${isDarkMode ? 'text-gray-500 border-b border-white/5' : 'text-gray-500 border-b border-gray-100'}`}>
+            <thead className={`${isDarkMode ? 'border-b border-white/10' : 'text-gray-500 border-b border-gray-200'}`}>
               <tr>
-                <th className="pb-3 font-medium">Tên tài liệu</th>
-                <th className="pb-3 font-medium">Danh mục</th>
-                <th className="pb-3 font-medium">Định dạng</th>
-                <th className="pb-3 font-medium text-right">Hành động</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Tên tài liệu</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Danh mục</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Định dạng</th>
+                <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-right ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Hành động</th>
               </tr>
             </thead>
             <tbody>
@@ -487,7 +487,7 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
                     {resource.type} • {resource.size}
                   </td>
                   <td className="py-4 text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-5">
                       <a href={resource.url} target="_blank" rel="noopener noreferrer" className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-blue-400 hover:bg-white/5' : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'}`} title="Truy cập / Xem">
                         <ExternalLink className="w-4 h-4" />
                       </a>
@@ -498,7 +498,7 @@ function ResourcesView({ isDarkMode }: { isDarkMode: boolean }) {
                       )}
                       <button 
                         onClick={() => handleDelete(resource.id)}
-                        className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-red-400 hover:bg-white/5' : 'text-gray-500 hover:text-red-600 hover:bg-red-50'}`}
+                        className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-red-400 hover:bg-red-400/10' : 'text-gray-500 hover:text-red-600 hover:bg-red-50'}`}
                         title="Xóa tài liệu"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -1008,12 +1008,12 @@ export default function App() {
                 <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Học sinh được Đánh dấu</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className={`${isDarkMode ? 'text-gray-500 border-b border-white/5' : 'text-gray-500 border-b border-gray-100'}`}>
+                    <thead className={`${isDarkMode ? 'border-b border-white/10' : 'text-gray-500 border-b border-gray-200'}`}>
                       <tr>
-                        <th className="pb-3 font-medium">Học sinh</th>
-                        <th className="pb-3 font-medium text-center">Wellbeing</th>
-                        <th className="pb-3 font-medium text-center">Đánh dấu</th>
-                        <th className="pb-3 font-medium text-right">Hành động</th>
+                        <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Học sinh</th>
+                        <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-center ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Wellbeing</th>
+                        <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-center ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Đánh dấu</th>
+                        <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-right ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Hành động</th>
                       </tr>
                     </thead>
                     <tbody>
