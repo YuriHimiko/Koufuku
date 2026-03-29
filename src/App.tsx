@@ -163,7 +163,7 @@ function StudentListView({ isDarkMode }: { isDarkMode: boolean }) {
   );
 }
 
-function AlertsView({ isDarkMode }: { isDarkMode: boolean }) {
+function AlertsView({ isDarkMode, onSelectAlert }: { isDarkMode: boolean, onSelectAlert: (alert: any) => void }) {
   const alertStudents = markedStudents.filter(s => s.color === 'bg-yellow-500' || s.color === 'bg-red-500');
 
   return (
@@ -201,7 +201,15 @@ function AlertsView({ isDarkMode }: { isDarkMode: boolean }) {
                     {student.status}
                   </td>
                   <td className="py-4 text-right">
-                    <button className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
+                    <button 
+                      onClick={() => onSelectAlert({ 
+                        name: student.name, 
+                        class: '9A', 
+                        level: student.color === 'bg-red-500' ? 'red' : 'yellow', 
+                        status: student.color === 'bg-red-500' ? 'Cảnh báo Đỏ' : 'Cảnh báo Vàng' 
+                      })}
+                      className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}
+                    >
                       Xem chi tiết
                     </button>
                   </td>
@@ -759,6 +767,8 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Default to true for now as per previous request 4
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [selectedAction, setSelectedAction] = useState<number | null>(null);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -1353,21 +1363,26 @@ export default function App() {
                   { name: 'Nguyễn Văn A', status: 'Cảnh báo đỏ', time: '1h ago', level: 'red' },
                   { name: 'Nguyễn Văn A', status: 'Cảnh báo đỏ', time: '2h ago', level: 'red' },
                 ].map((notif, idx) => (
-                  <div key={idx} className="flex items-center justify-between group">
+                    <div key={idx} className="flex items-center justify-between group">
                     <div className="flex items-center gap-3">
                       <img src={`https://picsum.photos/seed/user${idx}/40/40`} className="w-10 h-10 rounded-full" alt="" />
                       <div>
                         <div className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{notif.name}</div>
-                        <div className={`text-xs font-medium px-2 py-0.5 rounded-md inline-block ${
+                        <div className={`text-xs font-medium px-2 py-0.5 rounded-md inline-block cursor-pointer hover:opacity-80 transition-opacity ${
                           notif.level === 'red' ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-600'
-                        }`}>
+                        }`}
+                        onClick={() => setSelectedAlert({ ...notif, issue: notif.status, class: '9A' })}
+                        >
                           {notif.status}
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="text-xs text-gray-400">{notif.time}</span>
-                      <AlertTriangle className={`w-5 h-5 ${notif.level === 'red' ? 'text-red-500' : 'text-yellow-500'}`} />
+                      <AlertTriangle 
+                        className={`w-5 h-5 cursor-pointer hover:scale-110 transition-transform ${notif.level === 'red' ? 'text-red-500' : 'text-yellow-500'}`} 
+                        onClick={() => setSelectedAlert({ ...notif, issue: notif.status, class: '9A' })}
+                      />
                     </div>
                   </div>
                 ))}
@@ -1378,7 +1393,7 @@ export default function App() {
         ) : currentView === 'students' ? (
           <StudentListView isDarkMode={isDarkMode} />
         ) : currentView === 'alerts' ? (
-          <AlertsView isDarkMode={isDarkMode} />
+          <AlertsView isDarkMode={isDarkMode} onSelectAlert={setSelectedAlert} />
         ) : currentView === 'reports' ? (
           <ReportsView isDarkMode={isDarkMode} />
         ) : currentView === 'resources' ? (
@@ -1389,6 +1404,124 @@ export default function App() {
           <CameraMonitoringView onBack={() => setCurrentView('settings')} isDarkMode={isDarkMode} />
         ) : null}
       </main>
+
+      {/* Alert Detail Modal */}
+      {selectedAlert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div 
+            className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-100 ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={`p-6 border-b flex justify-between items-center ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
+              <h3 className={`text-xl font-black ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Chi tiết Cảnh báo</h3>
+              <button 
+                onClick={() => setSelectedAlert(null)}
+                className={`p-2 rounded-full transition-colors ${isDarkMode ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="p-8 space-y-8">
+              <div className="flex items-center gap-6">
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-inner ${isDarkMode ? 'bg-white/5' : 'bg-gray-50'}`}>
+                  <User className={`w-10 h-10 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                </div>
+                <div>
+                  <div className={`text-2xl font-black mb-1 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{selectedAlert.name}</div>
+                  <div className="flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
+                      Lớp: {selectedAlert.class || '9A'}
+                    </span>
+                    <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${
+                      selectedAlert.level === 'red' || selectedAlert.issue?.includes('Đỏ') ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-600'
+                    }`}>
+                      {selectedAlert.status || selectedAlert.issue}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className={`text-xs font-black uppercase tracking-[0.2em] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Đề xuất hành động can thiệp</h4>
+                <div className="space-y-3">
+                  {[
+                    { 
+                      icon: <MessageSquare className="w-4 h-4" />, 
+                      text: "Sắp xếp buổi tham vấn 1-1 với chuyên gia tâm lý trong 24h tới.",
+                      pros: "Tiếp cận sâu sắc tâm lý, tạo không gian an toàn để học sinh chia sẻ, can thiệp kịp thời các vấn đề khẩn cấp.",
+                      cons: "Tốn kém nguồn lực chuyên gia, học sinh có thể cảm thấy bị 'gắn nhãn' hoặc lo lắng nếu chưa sẵn sàng."
+                    },
+                    { 
+                      icon: <Users className="w-4 h-4" />, 
+                      text: "Liên hệ trực tiếp với phụ huynh để trao đổi về các biểu hiện gần đây.",
+                      pros: "Kết nối thông tin giữa nhà trường và gia đình, huy động sự hỗ trợ từ người thân, hiểu rõ bối cảnh sinh hoạt.",
+                      cons: "Có thể gây áp lực ngược nếu gia đình là nguồn cơn căng thẳng, làm rạn nứt niềm tin của học sinh."
+                    },
+                    { 
+                      icon: <Activity className="w-4 h-4" />, 
+                      text: "Kích hoạt chế độ theo dõi sát sao qua hệ thống Camera AI tại lớp học.",
+                      pros: "Thu thập dữ liệu khách quan về hành vi, không gây phiền hà trực tiếp, phát hiện sớm các dấu hiệu bất thường.",
+                      cons: "Vấn đề về quyền riêng tư, học sinh có thể cảm thấy bị giám sát quá mức, không hiểu được cảm xúc nội tâm."
+                    }
+                  ].map((action, i) => (
+                    <div key={i} className="space-y-2">
+                      <div 
+                        onClick={() => setSelectedAction(selectedAction === i ? null : i)}
+                        className={`flex items-start gap-4 p-4 rounded-2xl border cursor-pointer transition-all hover:scale-[1.01] ${
+                          selectedAction === i 
+                            ? (isDarkMode ? 'bg-[#d4af37]/10 border-[#d4af37]' : 'bg-[#d4af37]/5 border-[#d4af37]')
+                            : (isDarkMode ? 'bg-white/5 border-white/5 hover:border-white/20' : 'bg-gray-50 border-gray-100 hover:border-gray-200')
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${selectedAction === i ? 'bg-[#d4af37] text-[#0a192f]' : 'bg-[#d4af37]/10 text-[#d4af37]'}`}>
+                          {action.icon}
+                        </div>
+                        <div className="flex-1">
+                          <p className={`text-sm font-bold leading-relaxed ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{action.text}</p>
+                          {selectedAction === i && (
+                            <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                              <div className="flex gap-2">
+                                <div className="w-1 h-auto bg-green-500 rounded-full shrink-0"></div>
+                                <div>
+                                  <span className="text-[10px] font-black uppercase text-green-500 tracking-wider">Lợi ích:</span>
+                                  <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{action.pros}</p>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <div className="w-1 h-auto bg-red-500 rounded-full shrink-0"></div>
+                                <div>
+                                  <span className="text-[10px] font-black uppercase text-red-500 tracking-wider">Hạn chế:</span>
+                                  <p className={`text-xs mt-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{action.cons}</p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <ChevronRight className={`w-4 h-4 mt-1.5 transition-transform duration-300 ${selectedAction === i ? 'rotate-90 text-[#d4af37]' : 'text-gray-400'}`} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={`p-6 border-t flex gap-3 ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
+              <button 
+                onClick={() => { setSelectedAlert(null); setSelectedAction(null); }}
+                className={`flex-1 py-4 rounded-2xl font-bold transition-all ${isDarkMode ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+              >
+                Đóng
+              </button>
+              <button 
+                className="flex-1 py-4 bg-gradient-to-r from-[#d4af37] to-[#f9d423] text-[#0a192f] font-black rounded-2xl shadow-lg shadow-[#d4af37]/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                Bắt đầu can thiệp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
