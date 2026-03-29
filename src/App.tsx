@@ -26,7 +26,10 @@ import {
   ArrowLeft,
   Upload,
   Trash2,
-  Lock
+  Lock,
+  Menu,
+  X,
+  Calendar
 } from 'lucide-react';
 const markedStudents = [
   { id: 1, name: 'Nguyễn Văn An (9A)', wellbeing: 80, status: 'Theo dõi thêm', color: 'bg-green-500' },
@@ -718,6 +721,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const notifications = [
@@ -744,6 +748,108 @@ export default function App() {
 
   return (
     <div className={`flex h-screen font-sans overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-black text-white' : 'bg-[#eaf4f4] text-gray-800'}`}>
+      {/* Mobile Bottom Navigation */}
+      <div className={`lg:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around px-2 py-3 border-t transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border-white/10' : 'bg-white border-gray-200 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]'}`}>
+        <button 
+          onClick={() => setCurrentView('dashboard')}
+          className={`flex flex-col items-center gap-1 transition-colors ${currentView === 'dashboard' ? 'text-blue-500' : 'text-gray-400'}`}
+        >
+          <Home className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Trang chủ</span>
+        </button>
+        <button 
+          onClick={() => setCurrentView('students')}
+          className={`flex flex-col items-center gap-1 transition-colors ${currentView === 'students' ? 'text-blue-500' : 'text-gray-400'}`}
+        >
+          <Users className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Học sinh</span>
+        </button>
+        <button 
+          onClick={() => setIsSearchOpen(true)}
+          className="flex flex-col items-center gap-1 text-gray-400"
+        >
+          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center -mt-8 shadow-lg shadow-blue-500/30 text-white">
+            <Search className="w-6 h-6" />
+          </div>
+          <span className="text-[10px] font-medium mt-1">Tìm kiếm</span>
+        </button>
+        <button 
+          onClick={() => setCurrentView('alerts')}
+          className={`flex flex-col items-center gap-1 transition-colors ${currentView === 'alerts' ? 'text-blue-500' : 'text-gray-400'}`}
+        >
+          <AlertTriangle className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Cảnh báo</span>
+        </button>
+        <button 
+          onClick={() => setIsMobileMenuOpen(true)}
+          className={`flex flex-col items-center gap-1 transition-colors ${isMobileMenuOpen ? 'text-blue-500' : 'text-gray-400'}`}
+        >
+          <Menu className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Thêm</span>
+        </button>
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <div 
+            className={`absolute right-0 top-0 bottom-0 w-72 shadow-2xl transition-colors duration-300 ${isDarkMode ? 'bg-[#121212]' : 'bg-white'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6 flex items-center justify-between border-b border-white/5">
+              <h2 className="text-2xl font-bold text-[#3b82f6]">Menu</h2>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 rounded-full hover:bg-white/5">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 space-y-2">
+              <button 
+                onClick={() => { setCurrentView('reports'); setIsMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-colors ${currentView === 'reports' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-blue-50 text-blue-600') : (isDarkMode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50')}`}
+              >
+                <FileText className="w-5 h-5" />
+                <span className="font-medium">Báo cáo & Biên bản</span>
+              </button>
+              <button 
+                onClick={() => { setCurrentView('resources'); setIsMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-colors ${currentView === 'resources' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-blue-50 text-blue-600') : (isDarkMode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50')}`}
+              >
+                <BookOpen className="w-5 h-5" />
+                <span className="font-medium">Nguồn tài nguyên</span>
+              </button>
+              <button 
+                onClick={() => { setCurrentView('camera'); setIsMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-colors ${currentView === 'camera' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-blue-50 text-blue-600') : (isDarkMode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50')}`}
+              >
+                <Video className="w-5 h-5" />
+                <span className="font-medium">Camera AI</span>
+              </button>
+              <button 
+                onClick={() => { setCurrentView('settings'); setIsMobileMenuOpen(false); }}
+                className={`w-full flex items-center gap-4 p-4 rounded-xl transition-colors ${currentView === 'settings' ? (isDarkMode ? 'bg-white/10 text-white' : 'bg-blue-50 text-blue-600') : (isDarkMode ? 'text-gray-400 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50')}`}
+              >
+                <Settings className="w-5 h-5" />
+                <span className="font-medium">Cài đặt</span>
+              </button>
+              <div className="pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between p-4">
+                  <span className={`font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Chế độ tối</span>
+                  <button 
+                    onClick={() => setIsDarkMode(!isDarkMode)}
+                    className={`w-12 h-6 rounded-full relative transition-colors ${isDarkMode ? 'bg-blue-600' : 'bg-gray-300'}`}
+                  >
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${isDarkMode ? 'left-7' : 'left-1'}`}></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Search Modal */}
       {isSearchOpen && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/60 backdrop-blur-sm">
@@ -809,8 +915,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Sidebar */}
-      <aside className={`w-64 flex flex-col shadow-sm z-10 transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border-r border-white/10' : 'bg-white'}`}>
+      {/* Sidebar (Desktop) */}
+      <aside className={`hidden lg:flex w-64 flex-col shadow-sm z-10 transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border-r border-white/10' : 'bg-white'}`}>
         <div className="p-6">
           <h1 className="text-3xl font-bold text-[#3b82f6] tracking-tight">Koufuku</h1>
         </div>
@@ -898,148 +1004,177 @@ export default function App() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Top Bar */}
-        <header className={`h-16 flex items-center justify-end px-8 gap-6 backdrop-blur-sm sticky top-0 z-20 transition-colors duration-300 ${isDarkMode ? 'bg-black/50' : 'bg-white/50'}`}>
-          <button 
-            onClick={() => setIsSearchOpen(true)}
-            className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'}`}
-          >
-            <Search className="w-5 h-5" />
-          </button>
-          
-          <div className="relative">
-            <button 
-              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className={`relative p-2 rounded-full transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-
-            {isNotificationsOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)}></div>
-                <div className={`absolute right-0 mt-2 w-80 rounded-2xl shadow-xl z-50 overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white border border-gray-100'}`}>
-                  <div className={`px-4 py-3 border-b flex justify-between items-center ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
-                    <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Thông báo quan trọng</h3>
-                    <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">4 MỚI</span>
-                  </div>
-                  <div className="max-h-[400px] overflow-y-auto">
-                    {notifications.map(notif => (
-                      <button 
-                        key={notif.id}
-                        className={`w-full text-left p-4 border-b last:border-0 transition-colors ${isDarkMode ? 'border-white/5 hover:bg-white/5' : 'border-gray-50 hover:bg-gray-50'}`}
-                        onClick={() => {
-                          if (notif.type === 'alert') setCurrentView('alerts');
-                          if (notif.type === 'appointment') setCurrentView('reports');
-                          setIsNotificationsOpen(false);
-                        }}
-                      >
-                        <div className="flex gap-3">
-                          <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${notif.status === 'urgent' ? 'bg-red-500 animate-pulse' : 'bg-blue-500'}`}></div>
-                          <div className="flex-1">
-                            <div className={`text-sm font-bold mb-0.5 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{notif.title}</div>
-                            <div className={`text-xs mb-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{notif.description}</div>
-                            <div className={`text-[10px] font-medium ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{notif.time}</div>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setCurrentView('alerts');
-                      setIsNotificationsOpen(false);
-                    }}
-                    className={`w-full py-3 text-center text-xs font-bold uppercase tracking-wider transition-colors ${isDarkMode ? 'bg-white/5 text-blue-400 hover:text-blue-300' : 'bg-gray-50 text-blue-600 hover:text-blue-700'}`}
-                  >
-                    Xem tất cả thông báo
-                  </button>
-                </div>
-              </>
-            )}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden pb-16 lg:pb-0">
+        {/* Top Header */}
+        <header className={`h-16 flex items-center justify-between px-4 lg:px-8 border-b transition-colors duration-300 ${isDarkMode ? 'bg-[#121212] border-white/10' : 'bg-white border-gray-100'}`}>
+          <div className="flex items-center gap-4">
+            <div className="lg:hidden">
+              <h1 className="text-xl font-bold text-[#3b82f6]">Koufuku</h1>
+            </div>
+            <div className="hidden lg:flex items-center gap-2 text-sm font-medium text-gray-500">
+              <span>Hệ thống</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className={isDarkMode ? 'text-white' : 'text-gray-800'}>
+                {currentView === 'dashboard' ? 'Dashboard' : 
+                 currentView === 'students' ? 'Học sinh' : 
+                 currentView === 'alerts' ? 'Cảnh báo' : 
+                 currentView === 'reports' ? 'Báo cáo' : 
+                 currentView === 'resources' ? 'Tài nguyên' : 
+                 currentView === 'settings' ? 'Cài đặt' : 'Camera'}
+              </span>
+            </div>
           </div>
 
-          <button className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 transition-transform hover:scale-110">
-            <img 
-              src="https://picsum.photos/seed/baominh/40/40" 
-              alt="Bảo Minh" 
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </button>
+          <div className="flex items-center gap-2 lg:gap-4">
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className={`p-2 rounded-xl transition-colors ${isDarkMode ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-50 text-gray-500'}`}
+            >
+              <Search className="w-5 h-5" />
+            </button>
+          
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className={`relative p-2 rounded-full transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+              </button>
+
+              {isNotificationsOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)}></div>
+                  <div className={`absolute right-0 mt-2 w-80 rounded-2xl shadow-xl z-50 overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white border border-gray-100'}`}>
+                    <div className={`px-4 py-3 border-b flex justify-between items-center ${isDarkMode ? 'border-white/10' : 'border-gray-100'}`}>
+                      <h3 className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Thông báo quan trọng</h3>
+                      <span className="text-[10px] bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold">4 MỚI</span>
+                    </div>
+                    <div className="max-h-[400px] overflow-y-auto">
+                      {notifications.map(notif => (
+                        <button 
+                          key={notif.id}
+                          className={`w-full text-left p-4 border-b last:border-0 transition-colors ${isDarkMode ? 'border-white/5 hover:bg-white/5' : 'border-gray-50 hover:bg-gray-50'}`}
+                          onClick={() => {
+                            if (notif.type === 'alert') setCurrentView('alerts');
+                            if (notif.type === 'appointment') setCurrentView('reports');
+                            setIsNotificationsOpen(false);
+                          }}
+                        >
+                          <div className="flex gap-3">
+                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${notif.status === 'urgent' ? 'bg-red-500 animate-pulse' : 'bg-blue-500'}`}></div>
+                            <div className="flex-1">
+                              <div className={`text-sm font-bold mb-0.5 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{notif.title}</div>
+                              <div className={`text-xs mb-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{notif.description}</div>
+                              <div className={`text-[10px] font-medium ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{notif.time}</div>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setCurrentView('alerts');
+                        setIsNotificationsOpen(false);
+                      }}
+                      className={`w-full py-3 text-center text-xs font-bold uppercase tracking-wider transition-colors ${isDarkMode ? 'bg-white/5 text-blue-400 hover:text-blue-300' : 'bg-gray-50 text-blue-600 hover:text-blue-700'}`}
+                    >
+                      Xem tất cả thông báo
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <button className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 transition-transform hover:scale-110">
+              <img 
+                src="https://picsum.photos/seed/baominh/40/40" 
+                alt="Bảo Minh" 
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            </button>
+          </div>
         </header>
 
         {/* Dashboard Content */}
         {currentView === 'dashboard' ? (
-        <div className="flex-1 overflow-auto p-8">
-          <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Dashboard Tổng quan</h2>
+        <div className="flex-1 overflow-auto p-4 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
+            <div>
+              <h2 className={`text-2xl lg:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Chào buổi sáng, Bảo Minh!</h2>
+              <p className={`mt-1 text-sm lg:text-base ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Hôm nay có 4 lịch hẹn và 2 cảnh báo mới cần xử lý.</p>
+            </div>
+            <div className={`flex items-center gap-3 p-1.5 rounded-2xl ${isDarkMode ? 'bg-white/5' : 'bg-white shadow-sm'}`}>
+              <button className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${isDarkMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-[#3b82f6] text-white shadow-md'}`}>Hôm nay</button>
+              <button className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-800'}`}>Tuần này</button>
+            </div>
+          </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#dcfce7]'}`}>
-              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Tổng số học sinh:</span>
-              <span className="text-3xl font-bold mt-2">120</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <div className={`rounded-2xl p-4 lg:p-6 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#dcfce7]'}`}>
+              <span className={`text-xs lg:text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Tổng số học sinh:</span>
+              <span className="text-2xl lg:text-3xl font-bold mt-2">120</span>
             </div>
-            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white'}`}>
-              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Lớp</span>
-              <span className="text-xl font-bold mt-2">Lớp 9A, 9B</span>
+            <div className={`rounded-2xl p-4 lg:p-6 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-white'}`}>
+              <span className={`text-xs lg:text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Lớp</span>
+              <span className="text-lg lg:text-xl font-bold mt-2">Lớp 9A, 9B</span>
             </div>
-            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#fef3c7]'}`}>
-              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Học sinh cần theo dõi:</span>
-              <span className="text-3xl font-bold mt-2">8</span>
+            <div className={`rounded-2xl p-4 lg:p-6 shadow-sm flex flex-col justify-between transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#fef3c7]'}`}>
+              <span className={`text-xs lg:text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Học sinh cần theo dõi:</span>
+              <span className="text-2xl lg:text-3xl font-bold mt-2">8</span>
             </div>
-            <div className={`rounded-2xl p-4 shadow-sm flex flex-col justify-between relative transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#fce8e6]'}`}>
-              <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Cảnh báo cao (Đỏ):</span>
+            <div className={`rounded-2xl p-4 lg:p-6 shadow-sm flex flex-col justify-between relative transition-colors ${isDarkMode ? 'bg-[#1a1a1a] border border-white/10' : 'bg-[#fce8e6]'}`}>
+              <span className={`text-xs lg:text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Cảnh báo cao (Đỏ):</span>
               <div className="flex items-end justify-between mt-2">
-                <span className="text-3xl font-bold">3</span>
-                <AlertTriangle className="w-6 h-6 text-red-500 mb-1" />
+                <span className="text-2xl lg:text-3xl font-bold">3</span>
+                <AlertTriangle className="w-5 h-5 lg:w-6 lg:h-6 text-red-500 mb-1" />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column (Table) */}
-            <div className="col-span-2 flex flex-col gap-6">
+            <div className="lg:col-span-2 flex flex-col gap-6">
               
               {/* Marked Students Table */}
-              <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
+              <div className={`rounded-2xl p-4 lg:p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
                 <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Học sinh được Đánh dấu</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left">
+                <div className="overflow-x-auto -mx-4 lg:mx-0">
+                  <table className="w-full text-sm text-left min-w-[500px] lg:min-w-0">
                     <thead className={`${isDarkMode ? 'border-b border-white/10' : 'text-gray-500 border-b border-gray-200'}`}>
                       <tr>
-                        <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Học sinh</th>
+                        <th className={`pb-4 pl-4 lg:pl-0 font-semibold uppercase text-[11px] tracking-wider ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Học sinh</th>
                         <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-center ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Wellbeing</th>
                         <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-center ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Đánh dấu</th>
-                        <th className={`pb-4 font-semibold uppercase text-[11px] tracking-wider text-right ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Hành động</th>
+                        <th className={`pb-4 pr-4 lg:pr-0 font-semibold uppercase text-[11px] tracking-wider text-right ${isDarkMode ? 'text-[#A3A3A3]' : 'text-gray-500'}`}>Hành động</th>
                       </tr>
                     </thead>
                     <tbody>
                       {markedStudents.map((student) => (
                         <tr key={student.id} className={`border-b last:border-0 ${isDarkMode ? 'border-white/5' : 'border-gray-50'}`}>
-                          <td className="py-4">
+                          <td className="py-4 pl-4 lg:pl-0">
                             <div className="flex items-center gap-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-gray-500 ${isDarkMode ? 'bg-white/5' : 'bg-gray-200'}`}>
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-gray-500 shrink-0 ${isDarkMode ? 'bg-white/5' : 'bg-gray-200'}`}>
                                 <User className="w-4 h-4" />
                               </div>
-                              <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{student.name}</span>
+                              <span className={`font-medium truncate max-w-[120px] lg:max-w-none ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{student.name}</span>
                             </div>
                           </td>
                           <td className="py-4 align-middle">
-                            <div className={`w-24 h-2 rounded-full mx-auto overflow-hidden ${isDarkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
+                            <div className={`w-16 lg:w-24 h-2 rounded-full mx-auto overflow-hidden ${isDarkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
                               <div 
                                 className={`h-full rounded-full ${student.color}`} 
                                 style={{ width: `${student.wellbeing}%` }}
                               ></div>
                             </div>
                           </td>
-                          <td className={`py-4 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+                          <td className={`py-4 text-center font-medium text-xs lg:text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                             {student.status}
                           </td>
-                          <td className="py-4 text-right">
-                            <button className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
+                          <td className="py-4 pr-4 lg:pr-0 text-right">
+                            <button className={`px-3 lg:px-4 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-colors ${isDarkMode ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#dceaea] text-gray-800 hover:bg-[#cce6e6]'}`}>
                               Hành động
                             </button>
                           </td>
@@ -1053,7 +1188,7 @@ export default function App() {
             </div>
 
             {/* Right Column (Alerts) */}
-            <div className="col-span-1">
+            <div className="lg:col-span-1">
               <div className="bg-transparent h-full flex flex-col">
                 <div className="flex justify-between items-center mb-4 px-2">
                   <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>Cảnh báo Tâm lý Gần đây</h3>
