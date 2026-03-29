@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { utils, writeFile, read } from 'xlsx';
 import { 
   LineChart, 
@@ -43,7 +43,8 @@ import {
   Calendar,
   MessageSquare,
   MoreHorizontal,
-  Globe
+  Globe,
+  Plus
 } from 'lucide-react';
 const INITIAL_STUDENTS = [
   { id: 1, name: 'Nguyễn Văn An (9A)', wellbeing: 80, status: 'Theo dõi thêm', color: 'bg-green-500' },
@@ -525,17 +526,17 @@ function ResourcesView({ isDarkMode, language }: { isDarkMode: boolean, language
   });
 
   return (
-    <div className="flex-1 overflow-auto p-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="flex-1 overflow-auto p-4 sm:p-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <h2 className={`text-2xl font-bold leading-none ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{t.resources}</h2>
-        <label className="cursor-pointer flex items-center justify-center gap-2 px-5 py-2.5 bg-[#3b82f6] text-white rounded-xl text-sm font-semibold hover:bg-blue-600 transition-all shadow-md active:scale-95">
+        <label className="cursor-pointer flex items-center justify-center gap-2 px-5 py-2.5 bg-[#3b82f6] text-white rounded-xl text-sm font-semibold hover:bg-blue-600 transition-all shadow-md active:scale-95 w-full sm:w-auto">
           <Upload className="w-4 h-4" />
           {t.uploadDocument}
           <input type="file" className="hidden" onChange={handleFileUpload} />
         </label>
       </div>
       
-      <div className="grid grid-cols-3 gap-6 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-10">
         <button 
           onClick={() => setActiveCategory(activeCategory === 'Tài liệu chuyên môn' ? null : 'Tài liệu chuyên môn')}
           className={`text-left rounded-2xl p-6 border transition-all ${activeCategory === 'Tài liệu chuyên môn' ? (isDarkMode ? 'bg-blue-900/30 border-blue-500 shadow-lg' : 'bg-blue-100 border-blue-300 shadow-md') : (isDarkMode ? 'bg-[#1a1a1a] border-white/5 hover:bg-white/5' : 'bg-blue-50 border-blue-100 hover:bg-blue-100/50')}`}
@@ -562,17 +563,17 @@ function ResourcesView({ isDarkMode, language }: { isDarkMode: boolean, language
         </button>
       </div>
 
-      <div className={`rounded-2xl p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
-        <div className="flex justify-between items-center mb-8">
+      <div className={`rounded-2xl p-4 sm:p-6 shadow-sm transition-colors ${isDarkMode ? 'bg-[#121212] border border-white/10' : 'bg-white'}`}>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
           <h3 className={`text-lg font-bold leading-none ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>{activeCategory ? `${t.category}: ${activeCategory}` : t.featuredDocs}</h3>
-          <div className="relative ml-6">
+          <div className="relative w-full md:w-auto">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
               placeholder={t.searchDocs} 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className={`pl-10 pr-4 py-2.5 w-64 md:w-80 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200'}`}
+              className={`pl-10 pr-4 py-2.5 w-full md:w-80 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${isDarkMode ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-gray-200'}`}
             />
           </div>
         </div>
@@ -1337,6 +1338,17 @@ export default function App() {
     );
   }
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const notifications = [
     { id: 1, type: 'appointment', title: `${t.notifAppointment} Trần Thị Bình (9B)`, time: `${t.notifToday} 14:30`, description: t.notifPeriodicCounseling, status: 'upcoming' },
     { id: 2, type: 'alert', title: `${t.notifAlert} Lê Văn Cường (9A)`, time: `10 ${t.notifMinsAgo}`, description: t.notifAnxietyDetected, status: 'urgent' },
@@ -1352,6 +1364,14 @@ export default function App() {
     { id: 'resources', name: t.toolResourcesName, icon: <BookOpen className="w-4 h-4" />, description: t.toolResourcesDesc },
     { id: 'settings', name: t.toolSettingsName, icon: <Settings className="w-4 h-4" />, description: t.toolSettingsDesc },
     { id: 'camera', name: t.toolCameraName, icon: <Video className="w-4 h-4" />, description: t.toolCameraDesc },
+    { id: 'export', name: t.exportData, icon: <Download className="w-4 h-4" />, description: t.exportDataDesc },
+    { id: 'theme', name: t.theme, icon: <Moon className="w-4 h-4" />, description: t.themeDesc },
+    { id: 'language', name: t.language, icon: <Globe className="w-4 h-4" />, description: t.languageDesc },
+    { id: 'new-report', name: t.createNewMinute, icon: <Plus className="w-4 h-4" />, description: t.toolReportsDesc },
+    { id: 'prof-docs', name: t.professionalDocs, icon: <BookOpen className="w-4 h-4" />, description: t.professionalDocsDesc },
+    { id: 'counseling-skills', name: t.counselingSkills, icon: <Users className="w-4 h-4" />, description: t.counselingSkillsDesc },
+    { id: 'case-handling', name: t.caseHandling, icon: <AlertTriangle className="w-4 h-4" />, description: t.caseHandlingDesc },
+    { id: 'import-students', name: t.importStudentList, icon: <UploadCloud className="w-4 h-4" />, description: t.uploadXlsxDesc },
   ];
 
   const filteredTools = tools.filter(tool => 
@@ -1497,7 +1517,17 @@ export default function App() {
                     <button
                       key={tool.id}
                       onClick={() => {
-                        setCurrentView(tool.id);
+                        if (tool.id === 'export' || tool.id === 'theme' || tool.id === 'language') {
+                          setCurrentView('settings');
+                        } else if (tool.id === 'prof-docs' || tool.id === 'counseling-skills' || tool.id === 'case-handling') {
+                          setCurrentView('resources');
+                        } else if (tool.id === 'new-report') {
+                          setCurrentView('reports');
+                        } else if (tool.id === 'import-students') {
+                          setCurrentView('students');
+                        } else {
+                          setCurrentView(tool.id);
+                        }
                         setIsSearchOpen(false);
                         setSearchQuery('');
                       }}
@@ -1630,13 +1660,15 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-2 lg:gap-6">
-            <div className={`hidden md:flex items-center px-4 py-2 rounded-full transition-colors ${isDarkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
+            <div 
+              onClick={() => setIsSearchOpen(true)}
+              className={`hidden md:flex items-center px-4 py-2 rounded-full cursor-pointer transition-colors group ${isDarkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-gray-100 hover:bg-gray-200'}`}
+            >
               <Search className="w-4 h-4 text-gray-400 mr-2" />
-              <input 
-                type="text" 
-                placeholder={t.searchPlaceholder} 
-                className="bg-transparent border-none outline-none text-sm w-48"
-              />
+              <div className="text-gray-400 text-sm w-48">{t.searchPlaceholder}</div>
+              <div className={`ml-2 px-1.5 py-0.5 rounded border text-[10px] font-bold transition-colors ${isDarkMode ? 'border-white/10 text-gray-500 group-hover:text-gray-300' : 'border-gray-300 text-gray-400 group-hover:text-gray-600'}`}>
+                ⌘K
+              </div>
             </div>
             
             <button className={`p-2 rounded-full transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}>
